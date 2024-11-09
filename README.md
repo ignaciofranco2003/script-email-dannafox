@@ -1,8 +1,6 @@
 	py -m venv .venv
-
--  Instalar los req con
-
-	pip install -r req.txt
+	
+ 	pip install -r req.txt
 
 - llamar a la funcion con una id de campaña (solo se pueden generar reportes de campañas finalizadas)
 
