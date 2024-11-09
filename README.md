@@ -1,3 +1,5 @@
+	py -m venv .venv
+
 -  Instalar los req con
 
 	pip install -r req.txt
