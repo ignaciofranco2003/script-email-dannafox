@@ -10,10 +10,10 @@ import mysql.connector
 
 # Configuración de la base de datos
 mydb = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="1234",
-    database="dannafox",
+    host="",
+    user="",
+    password="",
+    database="",
 )
 
 # Configuración del correo
@@ -30,22 +30,20 @@ def get_campaign_data(campania_id):
     """Obtiene datos de la campaña desde la base de datos"""
     print("Conectando a la base de datos...")
     sql_query = """SELECT 
-    c.razon_social, 
-    c.cuil_cuit, 
-    c.apellido, 
-    c.nombre,
-    c.telefono, 
-    c.email,
-    cp.texto_SMS AS sms_text, 
-    l.ciudad AS locality, 
-    cp.cantidad_mensajes AS message_count, 
-    cp.nombre_campania AS campaign_name, 
-    cp.estado AS status, 
-    cp.fecha_inicio AS start_date
+        c.razon_social, 
+        c.cuil_cuit, 
+        c.apellido, 
+        c.nombre,
+        c.telefono, 
+        c.email,
+        cp.texto_SMS AS sms_text, 
+        cp.cantidad_mensajes AS message_count, 
+        cp.nombre_campania AS campaign_name, 
+        cp.estado AS status, 
+        cp.fecha_inicio AS start_date
     FROM campanias AS cp
     JOIN clientes AS c ON cp.cliente_id = c.cliente_id
-    JOIN localidades AS l ON cp.localidad_id = l.localidad_id
-    WHERE cp.campania_id = %s;"""  # Ensure that the query uses parameter placeholders
+    WHERE cp.campania_id = %s; """
 
     mycurr = mydb.cursor(dictionary=True)
     mycurr.execute(sql_query, (campania_id,))
@@ -66,11 +64,10 @@ def generate_excel_report(campaign, file_path):
         'Teléfono': [campaign['telefono']],
         'Email': [campaign['email']],
         'Texto SMS': [campaign['sms_text']],
-        'Localidad': [campaign['locality']],
         'Cantidad de Mensajes': [campaign['message_count']],
         'Nombre de Campaña': [campaign['campaign_name']],
         'Estado': [campaign['status']],
-        'Fecha de Inicio': [campaign['start_date']],
+        'Fecha de Inicio': [campaign['start_date'].strftime('%Y-%m-%d')]
     }
 
     df = pd.DataFrame(data)
@@ -107,7 +104,7 @@ def generate_campaign_report(campania_id):
             raise ValueError(f"La campaña con ID {campania_id} no está finalizada. No se puede enviar el reporte.")
 
         # Generar archivo Excel
-        file_path = f'campaña_{campania_id}.xlsx'
+        file_path = f'{campaign["campaign_name"]}.xlsx'
         generate_excel_report(campaign, file_path)
 
         # Enviar el archivo por correo
